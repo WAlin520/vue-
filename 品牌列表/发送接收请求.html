@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>向服务器发送接收请求</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+    <script src="../lib/vue-resource.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <button @click="getInfo">发送get请求</button>
+    <button @click="postInfo">发送post请求</button>
+    <button @click="jsonpInfo">发送jsonp请求</button>
+</div>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {},
+        methods: {
+            getInfo(){
+                this.$http.get('http://test01.com/get.php').then(
+                    function (result) {
+                        console.log(result.body);
+                    }
+                )
+            },
+            postInfo(){
+                this.$http.post('http://test01.com/post.php',{},{ emulateJSON:true }).then(
+                    function (result) {
+                        console.log(result.body);
+                    }
+                )
+            },
+            jsonpInfo(){
+                this.$http.jsonp('http://test01.com/jsonp.php').then(
+                    function (result) {
+                        console.log(result.body);
+                    }
+                )
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

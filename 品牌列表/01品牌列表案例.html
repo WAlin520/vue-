@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>品牌列表案例</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+    <link rel="stylesheet" href="../lib/bootstrap.css">
+
+    <!--<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+</head>
+<body>
+
+<!--<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>-->
+<!--<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>-->
+<!--<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>-->
+
+<div id="app">
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-heading">添加品牌</h3>
+        </div>
+        <div class="panel-body form-inline">
+            <label>
+                ID:
+                <input class="form-control" v-model="id">
+            </label>
+
+            <label>
+                商品名称：
+                <input class="form-control" v-model="name" @keyup.enter="add()">
+            </label>
+
+            <label>
+                <button class="btn btn-primary" @click="add">添加</button>
+            </label>
+
+            <label>
+                搜索名称关键字：
+                <input type="text" class="form-control" v-model="keywords" v-focus>
+            </label>
+        </div>
+    </div>
+    <table class="table table-bordered table-hover table-striped">
+        <thead>
+        <tr>
+            <td>Id</td>
+            <td>品牌名称</td>
+            <td>发布时间</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="item in Search(keywords)" :key="item.id">
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.ctime | Dateformat("") }}</td>
+            <td><a href="" @click.prevent = "Delete(item.id)">删除</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="app2">
+    <h4 v-color="'green'" v-fontWeight="'900'" v-fontsize="'18px'">{{ msg | Dateformat }}</h4>
+</div>
+
+<script>
+
+    //自定义按键修饰符
+    Vue.config.keyCodes.f2 = 113;
+
+    //自定义全局指令：
+    Vue.directive('focus', {
+        inserted: function(el){
+            el.focus();
+        }
+    })
+    Vue.directive("color", {
+        bind: function (el, binding) {
+            el.style.color = binding.value;//注意上面传入value时要加引号，否则会去data中找
+        }
+    })
+
+    //全局过滤器的定义
+    Vue.filter('Dateformat',function (data, formatArg = "") {//可以直接传默认参数，然后省略if后面的formatArg&&
+        var myDate = new Date(data);
+        var y = myDate.getFullYear();
+        var m = myDate.getMonth().toString().padStart(2, "0");//这里的月份不要忘了加1
+        var d = myDate.getDate().toString().padStart(2, "0");
+        //if( formatArg && formatArg.toLowerCase() === "yyyy-mm-dd"  ){
+        if( formatArg.toLowerCase() === "yyyy-mm-dd"  ){
+                //  return y + '-' + m + '-' + d;
+                return `${y}-${m}-${d}`;//这种方式比上面的可读性更强
+            } else{
+                var hh = myDate.getHours().toString().padStart(2, "0");
+                var mm = myDate.getMinutes().toString().padStart(2, "0");
+                var ss = myDate.getSeconds().toString().padStart(2, "0");
+                return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+            }
+    })
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            id: "",
+            name: "",
+            car: "",
+            keywords: "",
+            list: [
+                {id: 1, name: "宝马", ctime: new Date()},
+                {id: 2, name: "奔驰", ctime: new Date()},
+            ]
+        },
+        methods: {
+            add() {
+                console.log("ok");
+                if (this.id != "") {
+                    this.car = {id: this.id, name: this.name, ctime: new Date()};
+                    this.list.push(this.car);
+                    this.id = "";
+                    this.name = "";
+                }
+            },
+            Delete(id) {
+                this.list.some((item, i) => {  // 在数组的some方法中，如果return true就会立即停止后续循环
+                    if (item.id == id) {
+                        this.list.splice(i, 1);
+                        return true;
+                    }
+                })
+                //另一种方法：
+                //     Delete(id){
+                //     var i = this.list.findIndex(
+                //         item => { if(item.id == id){
+                //             return true;
+                //         }
+                //         })
+                //     this.list.splice(i,1);
+                // }
+            },
+        //     Search(keywords){
+        //         var NewList = [];
+        //         this.list.forEach( item => {
+        //             if( item.name.indexOf(keywords) != -1 ) {
+        //                 NewList.push(item);
+        //             }
+        //         })
+        //         return NewList;
+        //     }
+        // }
+        //forEach()  some  filter  findIndex
+            // filter：对数组中的每一项运行给定函数，返回该函数会返回true的项组成的数组
+        Search(keywords){
+            return this.list.filter( item => {
+              //if( item.name.indexOf(keywords) != -1 ) {
+                if (item.name.includes(keywords)) {
+                   return true;
+                }
+            })
+        }
+    },
+        filters: {
+            "Dateformat": function (data, formatArg = "") {
+                var myDate = new Date(data);
+                var y = myDate.getFullYear();
+                var m = ( myDate.getMonth()+1 ).toString().padStart(2, "0");//这里的月份不要忘了加1
+                var d = myDate.getDate().toString().padStart(2, "0");
+                //if( formatArg && formatArg.toLowerCase() === "yyyy-mm-dd"  ){
+                if( formatArg.toLowerCase() === "yyyy-mm-dd" ){
+                    //  return y + '-' + m + '-' + d;
+                    return `${y}-${m}-${d}`;//这种方式比上面的可读性更强
+                } else{
+                    var hh = myDate.getHours().toString().padStart(2, "0");
+                    var mm = myDate.getMinutes().toString().padStart(2, "0");
+                    var ss = myDate.getSeconds().toString().padStart(2, "0");
+                    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+                }
+            }
+            },
+        //自定义私有指令
+        directives: {
+            "fontweight": {
+                bind: function (el, arg) {
+                    el.style.fontWeight = arg.value;
+                    console.log("fontWeight");
+                }
+            }
+        }
+    })
+
+    var vm2 = new Vue({
+        el: "#app2",
+        data:{
+            msg: new Date()
+        },
+        methods:{},
+        directives:{
+            "fontweight":{
+                bind: function (el, arg) {
+                    el.style.fontWeight = arg.value;
+                    console.log("fontWeight");
+                }
+            },
+            "fontsize": function(el, arg){
+                    el.style.fontSize = parseInt( arg.value) + "px";
+                    console.log("fontsize");
+                }
+            }
+    })
+
+    //时间要补足两位，采用ES6的字符串的padStart(MaxLength, "不足位数需要补全的字符")方法，要先将数字编程字符串
+</script>
+
+</body>
+</html>

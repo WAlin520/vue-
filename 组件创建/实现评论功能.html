@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评论列表</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+    <link rel="stylesheet" href="../lib/bootstrap.css">
+</head>
+<body>
+
+<!--
+步骤：
+1.输入名字和评论，以及点击评论按钮作为子组件
+2.
+-->
+
+<div id="app">
+
+<comment @submitcomment="loadComments"></comment>
+
+    <ul class="list-group">
+        <li class="list-group-item" v-for="item in list" :key="item.id">
+            <span class="badge">评论人：{{ item.name }}</span>
+            {{ item.content }}
+        </li>
+    </ul>
+
+
+    <!--<button @click="myclick">date.now()</button>-->
+</div>
+
+
+<template id="comment">
+    <div>
+        <div class="form-group">
+            <label>评论人：</label>
+            <input type="text" class="form-control" v-model="name">
+        </div>
+        <div class="form-group">
+            <label>评论内容：</label>
+            <textarea class="form-control" v-model="content"></textarea>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" @click="postComment">发表评论</button>
+            <button class="btn btn-primary" @click="clearAllComment">清除所有评论</button>
+    </div>
+
+</template>
+
+
+<script>
+    var comment = {
+        template: "#comment",
+        data(){
+            return {
+                name: "",
+                content: ""
+            }
+        },
+        methods:{
+            postComment() {
+                if ( this.name == "" || this.content == "") {
+                    alert("请填写正确内容");
+                    return;
+                }
+                var comment = { id:Date.now(), name:this.name, content:this.content };
+                var comlist = JSON.parse( localStorage.getItem("Content") || "[]" );
+                comlist.unshift(comment);
+                localStorage.setItem( "Content", JSON.stringify(comlist) );
+                // localStorage.setItem( "Content", "" );//这个可以用来清掉缓存，将上面三行注释掉然后这行解除注释然后点击评论按钮可以清楚
+                this.$emit("submitcomment");
+                this.name = "";
+                this.content = "";
+            },
+
+            clearAllComment(){
+                var answer = confirm("是否确定清除所有评论");
+                if (answer == 1) {
+                    localStorage.setItem( "Content", "" );
+                    this.$emit("submitcomment");
+                    this.name = "";
+                    this.content = "";
+                } else{
+                    return;
+                }
+
+            }
+        }
+    };
+
+    var vm = new Vue({
+        el: "#app",
+        data:{
+            list:[
+                { id:Date.now(), name: "猪八玲", content:"我是猪" },
+                { id:Date.now()+"1", name: "杜甫", content:"。。。。。。。。" }
+            ]
+        },
+        methods:{
+            loadComments(){
+                // var list = [];
+                var list = JSON.parse( localStorage.getItem("Content") || "[]" );
+                this.list = list;
+            },
+            },
+   /*         myclick(){
+                console.log(Date.now());
+            }*/
+        created() {
+        this.loadComments();
+        },
+        components:{
+            comment
+        }
+    });
+
+
+</script>
+
+</body>
+</html>

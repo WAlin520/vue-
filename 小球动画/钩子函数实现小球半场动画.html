@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>钩子函数实现小球半场动画</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+    <style>
+        .ball{
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #9acfea;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <button @click="show = !show">加入购物车</button>
+    <transition @before-enter="beforeEnter" @enter="enter"  @after-enter="afterEnter">
+        <div class="ball" v-show="show">
+    </div>
+    </transition>
+</div>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            show: false,
+        },
+        methods: {
+            //动画钩子函数：el,表示 要执行动画的那个DOM元素，是一个原生的js对象
+            //动画入场起始样式
+            beforeEnter(el){
+                console.log("beforeEnter");
+                console.log(this.show);
+                el.style.transform = "translate( 0, 0 )";
+            },
+            //动画开始之后的样式，可以设置小球完成动画之后的结束状态
+            enter(el, done){
+                console.log("enter");
+                el.offsetWidth;//得写这个，会强制动画刷新
+                el.style.transform = "translate( 400px, 550px )";
+                el.style.transition = "all 2s ease";
+                done();
+            },
+            afterEnter(el){
+                console.log("afterEnter");
+                this.show = !this.show;
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

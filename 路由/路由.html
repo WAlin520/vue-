@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>路由</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+    <script src="../lib/vue-router-v3.0.2.js"></script>
+</head>
+<style>
+    .router-link-active{
+        background-color: #46b8da;
+        border-radius: 10%;
+        font-size: 20px;
+        font-style: oblique;
+    }
+
+    .v-enter,.v-leave-to{
+        opacity: 0;
+        transform: translate( 30px, 30px );
+    }
+
+    .v-enter-active,.v-leave-active{
+        transition: all 0.5s ease;
+    }
+
+</style>
+<body>
+
+<div id="app">
+    <router-link to="/login" tag="span">登陆</router-link>
+    <router-link to="/register">注册</router-link>
+
+    <transition mode="out-in">
+        <router-view></router-view>
+    </transition>
+
+</div>
+
+
+
+<script>
+
+    var login = {
+        template: "<h3>登陆组件</h3>",
+    };
+
+    var register = {
+        template: "<h3>注册组件</h3>",
+    };
+
+    var router = new VueRouter({
+        routes: [
+            { path: "/", redirect:"/login" },
+            { path: "/login", component: login },
+            { path: "/register", component: register },
+        ]
+    });
+
+
+
+    var vm = new Vue({
+        el: "#app",
+        data: {},
+        methods: {},
+        router
+    });
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>keyup事件实现监听</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <input type="text" v-model="firstname" > +
+    <input type="text" v-model="lastname" > =
+    <input type="text" v-model="fullname">
+</div>
+
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            firstname: "",
+            lastname: "",
+            // fullname: ""//fullname不需要定义
+        },
+        methods: {},
+        watch: {},
+        computed: {
+            //fullname不需要定义
+    //         注意：计算属性，在引用的时候一定不要加（）去调用，直接把它当做普通属性去使用就好
+    // 只要计算属性，这个function内部，作用到的任何data中的数据发生了变化，就会重新计算这个计算属性的值
+            "fullname": function () {
+                return this.firstname + "-" + this.lastname;
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

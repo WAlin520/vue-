@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>父组件和子组件之间的传值</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <p>这是父组件</p>
+    <div>
+        <login v-bind:parentmsg = "msg" @show = "show"></login>
+    </div>
+</div>
+
+
+<template id="temp">
+    <div>
+        <h3>这是子组件----{{parentmsg}}</h3>
+        <input type="button" value="子组件传值给父组件" @click="myclick">
+    </div>
+</template>
+
+<script>
+
+    var vm = new Vue({
+        el: "#app",
+        data:{
+            msg: "这是父组件的msg",
+            sonmsg: ""
+        },
+        methods:{
+            show(data1, data2){
+                console.log("调用父组件方法");
+                console.log(data1);
+                console.log(data2)
+            }
+        },
+        components: {
+            login: {
+                props:[ 'parentmsg' ],
+                template: "#temp",
+            data(){
+                return{
+                    sonmsg1:{ name:"大头儿子", age: 6 },
+                    sonmsg2:{ name:"小头爸爸", age: 35 },
+                }
+            },
+            methods:{
+                    myclick(){
+                        console.log("子组件事件");
+                        this.$emit("show", this.sonmsg1, this.sonmsg2 );
+                    }
+            }
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

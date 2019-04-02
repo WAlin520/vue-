@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件创建</title>
+    <script src="../lib/vue_v2.6.2.js"></script>
+
+</head>
+<body>
+
+<div id="app">
+    <mycom1></mycom1>
+    <my-com1></my-com1>
+    <mycom2></mycom2>
+    <mycom3></mycom3>
+</div>
+
+<!--要在挂载点外-->
+<template id="tmp3">
+    <div >
+        我来瞅瞅4
+    </div>
+</template>
+
+<div id="app2">
+    <tmp-private></tmp-private>
+    <tmp-private2></tmp-private2>
+</div>
+
+<template id="tmp4">
+    <div>我是定义的私有组件</div>
+</template>
+
+
+<script>
+
+    //定义全局组件的三种方式
+    var com1 = Vue.extend({
+        template: "<h3>我来瞅瞅1</h3>"
+    });
+
+    Vue.component("mycom1", com1);
+
+    Vue.component("myCom1", Vue.extend({
+        template: "<h3>我来瞅瞅2</h3>"
+    }))
+
+    Vue.component("mycom2", {
+        template:"<h4>我来瞅瞅3</h4>"
+    })
+
+    Vue.component("mycom3", {
+        template: "#tmp3"
+    })
+
+    var vm = new Vue({
+        el: "#app",
+        data: {},
+        methods:{}
+    })
+
+    var vm2 = new Vue({
+        el: "#app2",
+        data: {},
+        methods:{},
+        components:{
+            tmpPrivate: {
+                template: "<div><ul><li>1--{{msg1}}</li><li>2--{{msg2}}</li></ul></div>",
+                data: function() {
+                        return {
+                            msg1: "我是组件中的data1！",
+                            msg2: "我是组件中的data2！"
+                        };
+                    }
+            },
+            tmpPrivate2: {
+                template: "#tmp4"
+            }
+        }
+    })
+
+</script>
+
+</body>
+</html>
